@@ -21,9 +21,10 @@ const boom_1 = __importDefault(require("@hapi/boom"));
 // login controller
 const uploadPhotosController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { userId } = req.body.decode;
-        res.json(userId);
-        console.log(req);
+        // const { userId } = req.body.decode;
+        // res.json(userId);
+        console.log(req.body);
+        res.header("Access-Control-Allow-Origin", "*").json("ok");
     }
     catch (err) {
         if (err instanceof Error) {

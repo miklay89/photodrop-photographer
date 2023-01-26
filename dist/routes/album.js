@@ -16,6 +16,7 @@ router.post("/create-album", checktoken_1.default, createalbum_1.default);
 router.get("/get-album/:album_id", checktoken_1.default, getalbum_1.default);
 // get all albums by user_id
 router.get("/all/:user_id", checktoken_1.default, getallalbums_1.default);
+// TODO add check token middleware
 // upload one or multiple photos to album
-router.put("/upload-photos", checktoken_1.default, uploadphotostoalbum_1.default);
+router.post("/upload-photos", uploadphotostoalbum_1.default);
 exports.default = router;
