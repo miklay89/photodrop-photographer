@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -19,16 +10,13 @@ const uuid_1 = require("uuid");
 const db_1 = __importDefault(require("../../data/db"));
 const db = db_1.default.Connector;
 const { usersTable } = db_1.default.Tables;
-// sign up controller
-const signUpController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const signUpController = async (req, res) => {
     try {
         const login = req.body.login.toLowerCase();
         const password = req.body.password;
-        // optional fields
         const email = req.body.email;
         const fullName = req.body.fullName;
-        // check if user exist
-        const userExist = yield db
+        const userExist = await db
             .select(usersTable)
             .where((0, expressions_1.eq)(usersTable.login, login));
         if (userExist.length) {
@@ -36,9 +24,7 @@ const signUpController = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 .status(400)
                 .json(boom_1.default.badRequest(`User with login - ${login} is exist.`));
         }
-        // hash password
-        const hashedPassword = yield bcryptjs_1.default.hash(password, 10);
-        // new user object
+        const hashedPassword = await bcryptjs_1.default.hash(password, 10);
         const newUser = {
             login,
             password: hashedPassword,
@@ -46,9 +32,7 @@ const signUpController = (req, res) => __awaiter(void 0, void 0, void 0, functio
             email: email || null,
             fullName: fullName || null,
         };
-        // store new user in DB
-        yield db.insert(usersTable).values(newUser);
-        // res - with OK status
+        await db.insert(usersTable).values(newUser);
         return res
             .status(200)
             .json({ message: "User is registered.", login, password });
@@ -60,5 +44,5 @@ const signUpController = (req, res) => __awaiter(void 0, void 0, void 0, functio
         }
     }
     return null;
-});
+};
 exports.default = signUpController;

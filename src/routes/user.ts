@@ -1,9 +1,8 @@
-// import Router from "express";
-// import checkTokens from "../middlewares/checktoken";
-// import mockController from "../controllers/mock";
+import Router from "express";
+import getAllUsersController from "../controllers/user/get_all_user";
 
-// const router = Router();
+const router = Router();
 
-// router.post("/me/:id", checkTokens, mockController);
+router.get("/get-all", getAllUsersController);
 
-// export default router;
+export default router;

@@ -1,6 +1,7 @@
 // TODO
 import { RequestHandler } from "express";
 import Boom from "@hapi/boom";
+
 // import { v4 as uuid } from "uuid";
 // import { eq } from "drizzle-orm/expressions";
 // import dbObject from "../../data/db";
@@ -9,10 +10,13 @@ import Boom from "@hapi/boom";
 // const { albumsTable } = dbObject.Tables;
 
 // login controller
-const createAlbumController: RequestHandler = async (req, res) => {
+const uploadPhotosController: RequestHandler = async (req, res) => {
   try {
-    const { userId } = req.body.decode;
-    res.json(userId);
+    const bodyR = req.body;
+    console.log(bodyR);
+    const filesR = req.files;
+    console.log(filesR);
+    return res.json({ bodyR, filesR });
   } catch (err) {
     if (err instanceof Error) {
       console.log(err.message);
@@ -22,4 +26,4 @@ const createAlbumController: RequestHandler = async (req, res) => {
   return null;
 };
 
-export default createAlbumController;
+export default uploadPhotosController;

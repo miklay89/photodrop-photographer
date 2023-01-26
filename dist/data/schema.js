@@ -8,7 +8,7 @@ exports.usersTable = (0, drizzle_orm_pg_1.pgTable)("users", {
     userId: (0, drizzle_orm_pg_1.text)("user_id").notNull().primaryKey(),
     createdAt: (0, drizzle_orm_pg_1.timestamp)("created_at").defaultNow().notNull(),
     fullName: (0, drizzle_orm_pg_1.text)("full_name"),
-    email: (0, drizzle_orm_pg_1.text)("email"), // optional email
+    email: (0, drizzle_orm_pg_1.text)("email"),
 });
 exports.sessionsTable = (0, drizzle_orm_pg_1.pgTable)("sessions", {
     sessionId: (0, drizzle_orm_pg_1.text)("session_id").notNull().primaryKey(),
@@ -26,7 +26,7 @@ exports.albumsTable = (0, drizzle_orm_pg_1.pgTable)("albums", {
     albumLogo: (0, drizzle_orm_pg_1.text)("album_logo"),
     userId: (0, drizzle_orm_pg_1.text)("user_id")
         .notNull()
-        .references(() => exports.usersTable.userId), // ref to users
+        .references(() => exports.usersTable.userId),
 });
 exports.photosTable = (0, drizzle_orm_pg_1.pgTable)("photos", {
     photoId: (0, drizzle_orm_pg_1.text)("photo_id").notNull().primaryKey(),
@@ -38,5 +38,5 @@ exports.photosTable = (0, drizzle_orm_pg_1.pgTable)("photos", {
     isUnlocked: (0, drizzle_orm_pg_1.boolean)("is_unlocked").notNull().default(false),
     albumId: (0, drizzle_orm_pg_1.text)("album_id")
         .notNull()
-        .references(() => exports.albumsTable.albumId), // ref to album
+        .references(() => exports.albumsTable.albumId),
 });

@@ -1,9 +1,8 @@
-// TODO
 import { RequestHandler } from "express";
 import { eq } from "drizzle-orm/expressions";
 import Boom from "@hapi/boom";
 import dbObject from "../../data/db";
-import createTokens from "../../helpers/createtokens";
+import createTokens from "../../libs/jwt_generator";
 
 const db = dbObject.Connector;
 const { sessionsTable } = dbObject.Tables;

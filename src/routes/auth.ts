@@ -1,20 +1,20 @@
 import Router from "express";
-import signUpController from "../controllers/auth/signup";
-import loginController from "../controllers/auth/login";
-import refreshTokenController from "../controllers/auth/refreshtokens";
+import signUpController from "../controllers/auth/sign_up";
+import logInController from "../controllers/auth/log_in";
+import refreshTokensController from "../controllers/auth/refresh_tokens";
 import {
   checkLoginBody,
   checkSignUpBody,
   checkRefreshTokenBody,
-} from "../validators/authvalidators";
+} from "../validators/auth_validators";
 
 const router = Router();
 
 // registration in retool
 router.post("/sign-up", checkSignUpBody, signUpController);
 // login
-router.post("/login", checkLoginBody, loginController);
+router.post("/login", checkLoginBody, logInController);
 // refresh token
-router.post("/refresh", checkRefreshTokenBody, refreshTokenController);
+router.post("/refresh", checkRefreshTokenBody, refreshTokensController);
 
 export default router;

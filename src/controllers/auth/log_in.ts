@@ -4,13 +4,13 @@ import bcryptjs from "bcryptjs";
 import { v4 as uuid } from "uuid";
 import { eq } from "drizzle-orm/expressions";
 import dbObject from "../../data/db";
-import createTokens from "../../helpers/createtokens";
+import createTokens from "../../libs/jwt_generator";
 
 const db = dbObject.Connector;
 const { usersTable, sessionsTable, albumsTable } = dbObject.Tables;
 
 // login controller
-const loginController: RequestHandler = async (req, res) => {
+const logInController: RequestHandler = async (req, res) => {
   try {
     const login = req.body.login.toLowerCase();
     const password = req.body.password as string;
@@ -71,4 +71,4 @@ const loginController: RequestHandler = async (req, res) => {
   return null;
 };
 
-export default loginController;
+export default logInController;
