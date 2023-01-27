@@ -26,7 +26,7 @@ export const checkLoginBody: RequestHandler = (req, res, next) => {
 export const checkSignUpBody: RequestHandler = (req, res, next) => {
   const schema = Joi.object({
     login: Joi.string()
-      .pattern(/^[a-zA-Z_`]/)
+      .pattern(/^[a-zA-Z_]+$/, { name: "letters and underscore" })
       .required(),
     password: Joi.string().alphanum().required(),
     email: Joi.string(),

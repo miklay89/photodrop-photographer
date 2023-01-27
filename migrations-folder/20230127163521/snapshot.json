@@ -1,11 +1,11 @@
 {
   "version": "4",
   "dialect": "pg",
-  "id": "cdf3072e-1cb5-47a6-a21d-0f3c7b5f26e7",
+  "id": "3b2932c4-dbbc-4e82-aa25-01b972b5ca8c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "albums": {
-      "name": "albums",
+    "pd_albums": {
+      "name": "pd_albums",
       "schema": "",
       "columns": {
         "album_id": {
@@ -33,12 +33,6 @@
           "notNull": true,
           "default": "now()"
         },
-        "album_logo": {
-          "name": "album_logo",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
         "user_id": {
           "name": "user_id",
           "type": "text",
@@ -48,10 +42,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "albums_user_id_users_user_id_fk": {
-          "name": "albums_user_id_users_user_id_fk",
-          "tableFrom": "albums",
-          "tableTo": "users",
+        "pd_albums_user_id_pd_users_user_id_fk": {
+          "name": "pd_albums_user_id_pd_users_user_id_fk",
+          "tableFrom": "pd_albums",
+          "tableTo": "pd_users",
           "columnsFrom": [
             "user_id"
           ],
@@ -63,8 +57,148 @@
         }
       }
     },
-    "photos": {
-      "name": "photos",
+    "pd_client_selfies": {
+      "name": "pd_client_selfies",
+      "schema": "",
+      "columns": {
+        "selfie_id": {
+          "name": "selfie_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "selfie_url": {
+          "name": "selfie_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {}
+    },
+    "pd_clients_photos": {
+      "name": "pd_clients_photos",
+      "schema": "",
+      "columns": {
+        "client_id": {
+          "name": "client_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "photo_id": {
+          "name": "photo_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_unlocked": {
+          "name": "is_unlocked",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "pd_clients_photos_client_id_pd_clients_client_id_fk": {
+          "name": "pd_clients_photos_client_id_pd_clients_client_id_fk",
+          "tableFrom": "pd_clients_photos",
+          "tableTo": "pd_clients",
+          "columnsFrom": [
+            "client_id"
+          ],
+          "columnsTo": [
+            "client_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "pd_clients_photos_photo_id_pd_photos_photo_id_fk": {
+          "name": "pd_clients_photos_photo_id_pd_photos_photo_id_fk",
+          "tableFrom": "pd_clients_photos",
+          "tableTo": "pd_photos",
+          "columnsFrom": [
+            "photo_id"
+          ],
+          "columnsTo": [
+            "photo_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      }
+    },
+    "pd_clients": {
+      "name": "pd_clients",
+      "schema": "",
+      "columns": {
+        "client_id": {
+          "name": "client_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "phone": {
+          "name": "phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "selfie_id": {
+          "name": "selfie_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "full_name": {
+          "name": "full_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "pd_clients_selfie_id_pd_client_selfies_selfie_id_fk": {
+          "name": "pd_clients_selfie_id_pd_client_selfies_selfie_id_fk",
+          "tableFrom": "pd_clients",
+          "tableTo": "pd_client_selfies",
+          "columnsFrom": [
+            "selfie_id"
+          ],
+          "columnsTo": [
+            "selfie_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      }
+    },
+    "pd_photos": {
+      "name": "pd_photos",
       "schema": "",
       "columns": {
         "photo_id": {
@@ -104,13 +238,6 @@
           "notNull": true,
           "default": "now()"
         },
-        "is_unlocked": {
-          "name": "is_unlocked",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
-        },
         "album_id": {
           "name": "album_id",
           "type": "text",
@@ -120,10 +247,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "photos_album_id_albums_album_id_fk": {
-          "name": "photos_album_id_albums_album_id_fk",
-          "tableFrom": "photos",
-          "tableTo": "albums",
+        "pd_photos_album_id_pd_albums_album_id_fk": {
+          "name": "pd_photos_album_id_pd_albums_album_id_fk",
+          "tableFrom": "pd_photos",
+          "tableTo": "pd_albums",
           "columnsFrom": [
             "album_id"
           ],
@@ -135,8 +262,8 @@
         }
       }
     },
-    "sessions": {
-      "name": "sessions",
+    "pd_sessions": {
+      "name": "pd_sessions",
       "schema": "",
       "columns": {
         "session_id": {
@@ -166,10 +293,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "sessions_user_id_users_user_id_fk": {
-          "name": "sessions_user_id_users_user_id_fk",
-          "tableFrom": "sessions",
-          "tableTo": "users",
+        "pd_sessions_user_id_pd_users_user_id_fk": {
+          "name": "pd_sessions_user_id_pd_users_user_id_fk",
+          "tableFrom": "pd_sessions",
+          "tableTo": "pd_users",
           "columnsFrom": [
             "user_id"
           ],
@@ -181,8 +308,8 @@
         }
       }
     },
-    "users": {
-      "name": "users",
+    "pd_users": {
+      "name": "pd_users",
       "schema": "",
       "columns": {
         "login": {

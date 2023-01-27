@@ -29,7 +29,7 @@ exports.checkLoginBody = checkLoginBody;
 const checkSignUpBody = (req, res, next) => {
     const schema = joi_1.default.object({
         login: joi_1.default.string()
-            .pattern(/^[a-zA-Z_`]/)
+            .pattern(/^[a-zA-Z_]+$/, { name: "letters and underscore" })
             .required(),
         password: joi_1.default.string().alphanum().required(),
         email: joi_1.default.string(),

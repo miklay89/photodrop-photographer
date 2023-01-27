@@ -1,4 +1,4 @@
-// TODO
+// TODO store 4 files (create 3) on s3, add phones of clients
 import { RequestHandler } from "express";
 import Boom from "@hapi/boom";
 
