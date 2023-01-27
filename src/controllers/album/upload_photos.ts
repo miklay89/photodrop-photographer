@@ -1,4 +1,6 @@
-// TODO store 4 files (create 3) on s3, add phones of clients
+/* TODO store 4 files (create 3) on s3, add phones of clients 
+(может быть несколько телефонов - если нет в базе - надо создавать новых)
+*/
 import { RequestHandler } from "express";
 import Boom from "@hapi/boom";
 
