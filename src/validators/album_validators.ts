@@ -25,37 +25,3 @@ export const createAlbumBody: RequestHandler = (req, res, next) => {
     }
   }
 };
-
-// get album by album id validation
-export const getAlbumById: RequestHandler = (req, res, next) => {
-  const schema = Joi.object({
-    album_id: Joi.string().required(),
-  });
-
-  try {
-    const value = schema.validate(req.params);
-    if (value.error?.message) throw new Error(value.error?.message);
-    next();
-  } catch (err) {
-    if (err instanceof Error) {
-      res.status(400).json(Boom.badRequest(err.message));
-    }
-  }
-};
-
-// get all albums by user id
-export const getAllAlbumsByUserId: RequestHandler = (req, res, next) => {
-  const schema = Joi.object({
-    user_id: Joi.string().required(),
-  });
-
-  try {
-    const value = schema.validate(req.params);
-    if (value.error?.message) throw new Error(value.error?.message);
-    next();
-  } catch (err) {
-    if (err instanceof Error) {
-      res.status(400).json(Boom.badRequest(err.message));
-    }
-  }
-};

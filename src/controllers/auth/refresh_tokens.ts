@@ -10,7 +10,11 @@ const { sessionsTable } = dbObject.Tables;
 // refresh tokens controller
 const refreshTokensController: RequestHandler = async (req, res) => {
   try {
-    const refreshToken = req.body.refreshToken as string;
+    const { refreshToken } = req.cookies;
+
+    if (!refreshToken)
+      return res.json(Boom.badRequest("Refresh token required."));
+
     const timeStamp = new Date(Date.now()).toJSON();
 
     // check existing session

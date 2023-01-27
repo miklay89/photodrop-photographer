@@ -1,5 +1,7 @@
 import dotenv from "dotenv";
 import express from "express";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import authRoutes from "./routes/auth";
 import albumRoutes from "./routes/album";
@@ -10,6 +12,7 @@ dotenv.config();
 const app = express();
 
 app.use(cors());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 

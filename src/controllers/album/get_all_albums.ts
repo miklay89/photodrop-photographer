@@ -9,7 +9,7 @@ const { albumsTable } = dbObject.Tables;
 // get all albums by user id
 const getAllAlbumsController: RequestHandler = async (req, res) => {
   try {
-    const userId = req.params.user_id;
+    const { userId } = req.body.decode;
     const albums = await db
       .select(albumsTable)
       .where(eq(albumsTable.userId, userId));

@@ -10,7 +10,7 @@ const db = db_1.default.Connector;
 const { albumsTable } = db_1.default.Tables;
 const getAllAlbumsController = async (req, res) => {
     try {
-        const userId = req.params.user_id;
+        const { userId } = req.body.decode;
         const albums = await db
             .select(albumsTable)
             .where((0, expressions_1.eq)(albumsTable.userId, userId));

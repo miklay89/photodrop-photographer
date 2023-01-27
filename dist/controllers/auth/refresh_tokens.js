@@ -11,7 +11,9 @@ const db = db_1.default.Connector;
 const { sessionsTable } = db_1.default.Tables;
 const refreshTokensController = async (req, res) => {
     try {
-        const refreshToken = req.body.refreshToken;
+        const { refreshToken } = req.cookies;
+        if (!refreshToken)
+            return res.json(boom_1.default.badRequest("Refresh token required."));
         const timeStamp = new Date(Date.now()).toJSON();
         const sessionIsExist = await db
             .select(sessionsTable)

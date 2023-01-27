@@ -43,20 +43,3 @@ export const checkSignUpBody: RequestHandler = (req, res, next) => {
     }
   }
 };
-
-// refresh-token body validation
-export const checkRefreshTokenBody: RequestHandler = (req, res, next) => {
-  const schema = Joi.object({
-    refreshToken: Joi.string().required(),
-  });
-  try {
-    const value = schema.validate(req.body);
-    if (value.error?.message) throw new Error(value.error?.message);
-
-    next();
-  } catch (err) {
-    if (err instanceof Error) {
-      res.status(400).json(Boom.badRequest(err.message));
-    }
-  }
-};

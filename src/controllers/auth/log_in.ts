@@ -7,7 +7,7 @@ import dbObject from "../../data/db";
 import createTokens from "../../libs/jwt_generator";
 
 const db = dbObject.Connector;
-const { usersTable, sessionsTable, albumsTable } = dbObject.Tables;
+const { usersTable, sessionsTable } = dbObject.Tables;
 
 // login controller
 const logInController: RequestHandler = async (req, res) => {
@@ -51,17 +51,12 @@ const logInController: RequestHandler = async (req, res) => {
     // saving session
     await db.insert(sessionsTable).values(newSession);
 
-    // getting albums info
-    const albums = await db
-      .select(albumsTable)
-      .where(eq(albumsTable.userId, user[0].userId));
-
     return res
       .cookie("refreshToken", tokens.refreshToken, {
         httpOnly: true,
         sameSite: "strict",
       })
-      .json({ accessToken: tokens.accessToken, albums });
+      .json({ accessToken: tokens.accessToken });
   } catch (err) {
     if (err instanceof Error) {
       console.log(err.message);

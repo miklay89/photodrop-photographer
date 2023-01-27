@@ -1,11 +1,7 @@
 import Router from "express";
 import checkToken from "../libs/check_token";
 import upload from "../libs/multer";
-import {
-  createAlbumBody,
-  getAlbumById,
-  getAllAlbumsByUserId,
-} from "../validators/album_validators";
+import { createAlbumBody } from "../validators/album_validators";
 import createAlbumController from "../controllers/album/create_album";
 import getAlbumController from "../controllers/album/get_album";
 import getAllAlbumsController from "../controllers/album/get_all_albums";
@@ -22,20 +18,10 @@ router.post(
 );
 
 // get album by album_id
-router.get(
-  "/get-album/:album_id",
-  checkToken,
-  getAlbumById,
-  getAlbumController,
-);
+router.get("/get-album/:album_id", checkToken, getAlbumController);
 
 // get all albums by user_id
-router.get(
-  "/all/:user_id",
-  checkToken,
-  getAllAlbumsByUserId,
-  getAllAlbumsController,
-);
+router.get("/all", checkToken, getAllAlbumsController);
 
 // upload one or multiple photos to album
 router.post(

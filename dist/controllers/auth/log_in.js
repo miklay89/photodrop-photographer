@@ -10,7 +10,7 @@ const expressions_1 = require("drizzle-orm/expressions");
 const db_1 = __importDefault(require("../../data/db"));
 const jwt_generator_1 = __importDefault(require("../../libs/jwt_generator"));
 const db = db_1.default.Connector;
-const { usersTable, sessionsTable, albumsTable } = db_1.default.Tables;
+const { usersTable, sessionsTable } = db_1.default.Tables;
 const logInController = async (req, res) => {
     try {
         const login = req.body.login.toLowerCase();
@@ -35,15 +35,12 @@ const logInController = async (req, res) => {
             expiresIn: sessionExpireTimestamp,
         };
         await db.insert(sessionsTable).values(newSession);
-        const albums = await db
-            .select(albumsTable)
-            .where((0, expressions_1.eq)(albumsTable.userId, user[0].userId));
         return res
             .cookie("refreshToken", tokens.refreshToken, {
             httpOnly: true,
             sameSite: "strict",
         })
-            .json({ accessToken: tokens.accessToken, albums });
+            .json({ accessToken: tokens.accessToken });
     }
     catch (err) {
         if (err instanceof Error) {

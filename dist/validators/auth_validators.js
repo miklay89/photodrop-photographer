@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkRefreshTokenBody = exports.checkSignUpBody = exports.checkLoginBody = void 0;
+exports.checkSignUpBody = exports.checkLoginBody = void 0;
 const joi_1 = __importDefault(require("joi"));
 const boom_1 = __importDefault(require("@hapi/boom"));
 const checkLoginBody = (req, res, next) => {
@@ -48,20 +48,3 @@ const checkSignUpBody = (req, res, next) => {
     }
 };
 exports.checkSignUpBody = checkSignUpBody;
-const checkRefreshTokenBody = (req, res, next) => {
-    const schema = joi_1.default.object({
-        refreshToken: joi_1.default.string().required(),
-    });
-    try {
-        const value = schema.validate(req.body);
-        if (value.error?.message)
-            throw new Error(value.error?.message);
-        next();
-    }
-    catch (err) {
-        if (err instanceof Error) {
-            res.status(400).json(boom_1.default.badRequest(err.message));
-        }
-    }
-};
-exports.checkRefreshTokenBody = checkRefreshTokenBody;
