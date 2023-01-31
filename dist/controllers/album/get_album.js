@@ -15,10 +15,9 @@ const getAlbumController = async (req, res) => {
             .select(albumsTable)
             .leftJoin(photosTable, (0, expressions_1.eq)(photosTable.albumId, albumsTable.albumId))
             .where((0, expressions_1.eq)(albumsTable.albumId, albumId));
-        return res.json({
-            album: query.map((q) => q.pd_albums)[0],
-            photos: query.map((q) => q.pd_photos),
-        });
+        const album = query.map((q) => q.pd_albums)[0];
+        const photos = query.map((q) => q.pd_photos);
+        return res.json({ data: [album, photos] });
     }
     catch (err) {
         if (err instanceof Error) {
