@@ -100,6 +100,7 @@ const uploadPhotosController: RequestHandler = async (req, res) => {
       const markedFile = await createWatermark(originalFile);
       const thmbOriginal = await createThumbnail(originalFile);
       const thmbMarked = await createThumbnail(markedFile);
+      console.log("files converted and created");
       const newPhoto = {
         photoId: uuid(),
         albumId,
@@ -109,13 +110,16 @@ const uploadPhotosController: RequestHandler = async (req, res) => {
         unlockedPhotoUrl: await uploadFileToS3(originalFile),
         clients: clients.join(","),
       };
+      console.log("files uploaded");
       // remove files after storing in s3
       await removeFile(originalFile);
       await removeFile(markedFile);
       await removeFile(thmbOriginal);
       await removeFile(thmbMarked);
+      console.log("files deleted");
       // storing photos in db - photos_table
       await insertPhotoToDB(newPhoto);
+      console.log("files stored in DB");
     });
 
     // res for user
