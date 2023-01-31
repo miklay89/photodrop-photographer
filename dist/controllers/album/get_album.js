@@ -17,7 +17,8 @@ const getAlbumController = async (req, res) => {
             .where((0, expressions_1.eq)(albumsTable.albumId, albumId));
         const album = query.map((q) => q.pd_albums)[0];
         const photos = query.map((q) => q.pd_photos);
-        return res.json({ data: [album, photos] });
+        const data = [{ album, photos }];
+        return res.json({ data });
     }
     catch (err) {
         if (err instanceof Error) {

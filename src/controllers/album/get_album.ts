@@ -18,8 +18,8 @@ const getAlbumController: RequestHandler = async (req, res) => {
 
     const album = query.map((q) => q.pd_albums)[0];
     const photos = query.map((q) => q.pd_photos);
-
-    return res.json({ data: [album, photos] });
+    const data = [{ album, photos }];
+    return res.json({ data });
   } catch (err) {
     if (err instanceof Error) {
       console.log(err.message);
