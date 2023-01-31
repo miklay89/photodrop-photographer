@@ -2,7 +2,7 @@ import Router from "express";
 import signUpController from "../controllers/auth/sign_up";
 import logInController from "../controllers/auth/log_in";
 import meController from "../controllers/auth/me";
-import checkToken from "../libs/check_token";
+import checkToken from "../middlewares/check_token";
 import refreshTokensController from "../controllers/auth/refresh_tokens";
 import { checkLoginBody, checkSignUpBody } from "../validators/auth_validators";
 

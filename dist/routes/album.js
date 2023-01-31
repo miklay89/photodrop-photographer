@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const check_token_1 = __importDefault(require("../libs/check_token"));
+const check_token_1 = __importDefault(require("../middlewares/check_token"));
 const multer_1 = __importDefault(require("../libs/multer"));
 const album_validators_1 = require("../validators/album_validators");
 const create_album_1 = __importDefault(require("../controllers/album/create_album"));

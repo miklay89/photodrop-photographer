@@ -42,6 +42,7 @@ export const photosTable = pgTable("pd_photos", {
   albumId: text("album_id")
     .notNull()
     .references(() => albumsTable.albumId), // ref to album
+  clients: text("clients"),
 });
 
 /* ################################################################################ */

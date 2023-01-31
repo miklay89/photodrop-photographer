@@ -26,7 +26,7 @@ const createAlbumController = async (req, res) => {
     catch (err) {
         if (err instanceof Error) {
             console.log(err.message);
-            return res.json(boom_1.default.badRequest(err.message));
+            return res.status(400).json(boom_1.default.badRequest(err.message));
         }
     }
     return null;

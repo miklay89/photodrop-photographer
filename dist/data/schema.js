@@ -37,6 +37,7 @@ exports.photosTable = (0, drizzle_orm_pg_1.pgTable)("pd_photos", {
     albumId: (0, drizzle_orm_pg_1.text)("album_id")
         .notNull()
         .references(() => exports.albumsTable.albumId),
+    clients: (0, drizzle_orm_pg_1.text)("clients"),
 });
 exports.clientSelfiesTable = (0, drizzle_orm_pg_1.pgTable)("pd_client_selfies", {
     selfieId: (0, drizzle_orm_pg_1.text)("selfie_id").notNull().primaryKey(),

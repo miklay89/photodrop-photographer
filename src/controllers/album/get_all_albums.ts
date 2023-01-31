@@ -18,7 +18,7 @@ const getAllAlbumsController: RequestHandler = async (req, res) => {
   } catch (err) {
     if (err instanceof Error) {
       console.log(err.message);
-      return res.json(Boom.badRequest(err.message));
+      return res.status(400).json(Boom.badRequest(err.message));
     }
   }
   return null;

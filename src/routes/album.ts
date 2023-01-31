@@ -1,5 +1,5 @@
 import Router from "express";
-import checkToken from "../libs/check_token";
+import checkToken from "../middlewares/check_token";
 import upload from "../libs/multer";
 import { createAlbumBody } from "../validators/album_validators";
 import createAlbumController from "../controllers/album/create_album";
