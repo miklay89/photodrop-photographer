@@ -37,6 +37,7 @@
 	"location": "Glasgow", // required field
 	"datapicker": "04 Dec 1995 00:12:00 GMT" // required field
 }
+#### You will create new album with data from body
 #
 ### [GET] /album/get-album/:album_id
 #### body: none
