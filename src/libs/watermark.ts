@@ -3,10 +3,9 @@ import sharp from "sharp";
 
 const watermark = async (
   waterMarkTemplate: string,
-  file: string,
-  output: string,
-): Promise<void> => {
-  await sharp(file)
+  file: Buffer,
+): Promise<Buffer> => {
+  const newFile = await sharp(file)
     .composite([
       {
         input: waterMarkTemplate,
@@ -14,7 +13,8 @@ const watermark = async (
       },
     ])
     .toFormat("png")
-    .toFile(output);
+    .toBuffer();
+  return newFile;
 };
 
 export default watermark;

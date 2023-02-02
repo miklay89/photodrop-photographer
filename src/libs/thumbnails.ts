@@ -1,12 +1,13 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import sharp from "sharp";
 
-const thumbnail = async (file: string, output: string) => {
-  await sharp(file)
-    .jpeg({ quality: 95 })
+const thumbnail = async (file: Buffer) => {
+  const newFile = await sharp(file)
+    .toFormat("jpeg")
+    .jpeg()
     .resize(null, 200)
-    .toFile(output)
-    .catch((err) => console.log(err.message));
+    .toBuffer();
+  return newFile;
 };
 
 export default thumbnail;

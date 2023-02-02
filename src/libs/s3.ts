@@ -1,7 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import S3 from "aws-sdk/clients/s3";
-import fs from "fs";
-import { promisify } from "util";
+import { v4 as uuid } from "uuid";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -17,13 +16,11 @@ const s3 = new S3({
   secretAccessKey,
 });
 
-const uploadFileToS3 = async (file: string) => {
-  const fileBuffer = await promisify(fs.readFile)(file);
-
+const uploadFileToS3 = async (file: Buffer, extName: string) => {
   const uploadParams = {
     Bucket: bucketName,
-    Body: fileBuffer,
-    Key: `photographer/${file.split("/").pop() as string}`,
+    Body: file,
+    Key: `${uuid()}.${extName}`,
   };
 
   const result = await s3.upload(uploadParams).promise();

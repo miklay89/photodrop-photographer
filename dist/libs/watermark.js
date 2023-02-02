@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const sharp_1 = __importDefault(require("sharp"));
-const watermark = async (waterMarkTemplate, file, output) => {
-    await (0, sharp_1.default)(file)
+const watermark = async (waterMarkTemplate, file) => {
+    const newFile = await (0, sharp_1.default)(file)
         .composite([
         {
             input: waterMarkTemplate,
@@ -13,6 +13,7 @@ const watermark = async (waterMarkTemplate, file, output) => {
         },
     ])
         .toFormat("png")
-        .toFile(output);
+        .toBuffer();
+    return newFile;
 };
 exports.default = watermark;

@@ -4,8 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const s3_1 = __importDefault(require("aws-sdk/clients/s3"));
-const fs_1 = __importDefault(require("fs"));
-const util_1 = require("util");
+const uuid_1 = require("uuid");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const bucketName = process.env.AWS_BUCKET_NAME;
@@ -17,12 +16,11 @@ const s3 = new s3_1.default({
     accessKeyId,
     secretAccessKey,
 });
-const uploadFileToS3 = async (file) => {
-    const fileBuffer = await (0, util_1.promisify)(fs_1.default.readFile)(file);
+const uploadFileToS3 = async (file, extName) => {
     const uploadParams = {
         Bucket: bucketName,
-        Body: fileBuffer,
-        Key: `photographer/${file.split("/").pop()}`,
+        Body: file,
+        Key: `${(0, uuid_1.v4)()}.${extName}`,
     };
     const result = await s3.upload(uploadParams).promise();
     return result.Location;
