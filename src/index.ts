@@ -11,7 +11,18 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://photodrop-photographers.vercel.app/",
+      "http://192.168.0.157:3000",
+      "http://213.111.67.182:5173",
+      "http://localhost:5173",
+      `https://photodrop-photographer.onrender.com:${process.env.PORT}`,
+    ],
+    credentials: true,
+  }),
+);
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

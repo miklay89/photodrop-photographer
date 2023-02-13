@@ -12,7 +12,16 @@ const album_1 = __importDefault(require("./routes/album"));
 const user_1 = __importDefault(require("./routes/user"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({
+    origin: [
+        "https://photodrop-photographers.vercel.app/",
+        "http://192.168.0.157:3000",
+        "http://213.111.67.182:5173",
+        "http://localhost:5173",
+        `https://photodrop-photographer.onrender.com:${process.env.PORT}`,
+    ],
+    credentials: true,
+}));
 app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json());
