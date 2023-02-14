@@ -25,6 +25,7 @@
 #
 ### [GET] /auth/me
 #### body: none
+#### headers: ["authorization"]: access_token
 - check access token expiration
 #
 ### [GET] /user/get-all
@@ -37,25 +38,28 @@
 	"location": "Glasgow", // required field
 	"datapicker": "04 Dec 1995 00:12:00 GMT" // required field
 }
+#### headers: ["authorization"]: access_token
 #### You will create new album with data from body
 #
 ### [GET] /album/get-album/:album_id
 #### body: none
+#### headers: ["authorization"]: access_token
 #### You will get your album with photos by album_id
 #
 ### [GET] /album/all
 #### body: none
+#### headers: ["authorization"]: access_token
 #### You will get all yours albums
 #
 ### [POST] /album/upload-photos
 #### body: multipart-form
 {
-  "clients": "+32492347234", // optional
-  "clients": "+1234545234", // optional
+  "clients": "32492347234,380509545671", // optional string of clients
   "album": "album_id", // required
   "files": file.jpg, // required at least 1 file
   "files": file2.png, // required at least 1 file
 }
-#### Allow you to upload files to S3 from client side of APP
+#### headers: ["authorization"]: access_token
+#### Allow you to upload files to S3 from client side of application
 #
 
