@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const get_all_user_1 = __importDefault(require("../controllers/user/get_all_user"));
+const user_1 = __importDefault(require("../controllers/user/user"));
 const router = (0, express_1.default)();
-router.get("/get-all", get_all_user_1.default);
+router.get("/get-all", user_1.default.getAllUsers);
 exports.default = router;

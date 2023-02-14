@@ -6,12 +6,3 @@ export interface IFile {
   buffer: Buffer;
   size: number;
 }
-
-export interface IPhoto {
-  photoId: string;
-  albumId: string;
-  lockedThumbnailUrl: string;
-  lockedPhotoUrl: string;
-  unlockedThumbnailUrl: string;
-  unlockedPhotoUrl: string;
-}

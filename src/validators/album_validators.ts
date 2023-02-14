@@ -1,27 +1,47 @@
+/* eslint-disable class-methods-use-this */
 import Joi from "joi";
 import Boom from "@hapi/boom";
 import { RequestHandler } from "express";
 
-// create album body validation
-export const createAlbumBody: RequestHandler = (req, res, next) => {
-  const schema = Joi.object({
-    name: Joi.string().required(),
-    location: Joi.string().required(),
-    datapicker: Joi.string().required(),
-    decode: Joi.object({
-      userId: Joi.string().required(),
-      iat: Joi.number().required(),
-      exp: Joi.number().required(),
-    }).required(),
-  });
+class AlbumValidator {
+  public createAlbumBody: RequestHandler = (req, res, next) => {
+    const schema = Joi.object({
+      name: Joi.string().required(),
+      location: Joi.string().required(),
+      datapicker: Joi.string().required(),
+    });
 
-  try {
-    const value = schema.validate(req.body);
-    if (value.error?.message) throw new Error(value.error?.message);
-    next();
-  } catch (err) {
-    if (err instanceof Error) {
-      res.status(400).json(Boom.badRequest(err.message));
+    try {
+      const value = schema.validate(req.body);
+      if (value.error?.message) throw Boom.badData(value.error?.message);
+      next();
+    } catch (err) {
+      next(err);
     }
-  }
-};
+  };
+
+  public uploadPhotosToAlbumBody: RequestHandler = (req, res, next) => {
+    const bodySchema = Joi.object({
+      clients: Joi.string().required(),
+      album: Joi.string().required(),
+    });
+
+    const fileSchema = Joi.array().required().label("files");
+
+    try {
+      const valueBody = bodySchema.validate(req.body);
+      if (valueBody.error?.message)
+        throw Boom.badData(valueBody.error?.message);
+
+      const valueFile = fileSchema.validate(req.files);
+      if (valueFile.error?.message)
+        throw Boom.badData(valueFile.error?.message);
+
+      next();
+    } catch (err) {
+      next(err);
+    }
+  };
+}
+
+export default new AlbumValidator();

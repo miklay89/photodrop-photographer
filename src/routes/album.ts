@@ -1,34 +1,32 @@
 import Router from "express";
-import checkToken from "../middlewares/check_token";
+import isAuthorized from "../middlewares/is_authorized";
 import upload from "../libs/multer";
-import { createAlbumBody } from "../validators/album_validators";
-import createAlbumController from "../controllers/album/create_album";
-import getAlbumController from "../controllers/album/get_album";
-import getAllAlbumsController from "../controllers/album/get_all_albums";
-import uploadPhotosToAlbumController from "../controllers/album/upload_photos";
+import AlbumValidator from "../validators/album_validators";
+import AlbumController from "../controllers/album/album";
 
 const router = Router();
 
 // create album
 router.post(
   "/create-album",
-  checkToken,
-  createAlbumBody,
-  createAlbumController,
+  isAuthorized,
+  AlbumValidator.createAlbumBody,
+  AlbumController.createAlbum,
 );
 
 // get album by album_id
-router.get("/get-album/:album_id", checkToken, getAlbumController);
+router.get("/get-album/:albumId", isAuthorized, AlbumController.getAlbumById);
 
 // get all albums by user_id
-router.get("/all", checkToken, getAllAlbumsController);
+router.get("/all", isAuthorized, AlbumController.getAllAlbums);
 
 // upload one or multiple photos to album
 router.post(
   "/upload-photos",
-  checkToken,
+  isAuthorized,
   upload.array("files"),
-  uploadPhotosToAlbumController,
+  AlbumValidator.uploadPhotosToAlbumBody,
+  AlbumController.uploadPhotosToAlbum,
 );
 
 export default router;

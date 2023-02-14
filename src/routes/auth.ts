@@ -1,20 +1,21 @@
 import Router from "express";
-import signUpController from "../controllers/auth/sign_up";
-import logInController from "../controllers/auth/log_in";
-import meController from "../controllers/auth/me";
-import checkToken from "../middlewares/check_token";
-import refreshTokensController from "../controllers/auth/refresh_tokens";
-import { checkLoginBody, checkSignUpBody } from "../validators/auth_validators";
+import AuthController from "../controllers/auth/auth";
+import AuthValidator from "../validators/auth_validators";
+import isAuthorized from "../middlewares/is_authorized";
 
 const router = Router();
 
 // registration in retool
-router.post("/sign-up", checkSignUpBody, signUpController);
+router.post("/sign-up", AuthValidator.checkSignUpBody, AuthController.signUp);
 // login
-router.post("/login", checkLoginBody, logInController);
+router.post("/login", AuthValidator.checkLoginBody, AuthController.logIn);
 // refresh token
-router.post("/refresh", refreshTokensController);
+router.post(
+  "/refresh",
+  AuthValidator.checkCookies,
+  AuthController.refreshTokens,
+);
 // TODO - delete on prod (me - check access)
-router.get("/me", checkToken, meController);
+router.get("/me", isAuthorized, AuthController.me);
 
 export default router;
