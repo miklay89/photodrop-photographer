@@ -5,6 +5,7 @@
     "fieldname",
     "middlewares",
     "mozjpeg",
-    "Subsampling"
+    "Subsampling",
+    "Uppy"
   ]
 }

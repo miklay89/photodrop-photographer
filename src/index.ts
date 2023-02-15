@@ -20,8 +20,22 @@ app.use(
       "http://213.111.67.182:5173",
       "http://localhost:5173",
       "http://localhost:3000",
-      "https://pd-photographer.onrender.com",
     ],
+    methods: ["POST", "GET"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Uppy-Versions",
+      "Accept",
+      "x-requested-with",
+      "Access-Control-Allow-Origin",
+    ],
+    exposedHeaders: [
+      "Access-Control-Allow-Headers",
+      "Access-Control-Allow-Origin",
+    ],
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
     credentials: true,
   }),
 );
