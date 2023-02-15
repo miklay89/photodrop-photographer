@@ -12,7 +12,7 @@ const client = new Twilio(accountSid, authToken);
 async function sendSmsToClients(phone: string) {
   await client.messages.create({
     body: "PhotoDrop: Your photos have dropped 🔥 \nCheck them out here: \nhttps://photodrop-clients.vercel.app/hello",
-    from: "+447403933647",
+    messagingServiceSid: "MG47af43ea8390bc8433cd1d8f00c2145d",
     to: phone,
   });
 }

@@ -10,7 +10,7 @@ import convertToPng from "../../libs/convert_to_png";
 import watermark from "../../libs/watermark";
 import thumbnail from "../../libs/thumbnails";
 import uploadFileToS3 from "../../libs/s3";
-import sendSmsToClients from "../../libs/sms_notification";
+// import sendSmsToClients from "../../libs/sms_notification";
 import { IFile } from "./types";
 
 const db = dbObject.Connector;
@@ -130,11 +130,13 @@ class Album {
         await db.insert(photosTable).values(newPhoto);
       });
 
-      clients.split(",").forEach(async (phone: string) => {
-        // eslint-disable-next-line no-param-reassign
-        if (phone[0] !== "+") phone = `+${phone}`;
-        await sendSmsToClients(phone);
-      });
+      // clients.split(",").forEach(async (phone: string) => {
+      //   // eslint-disable-next-line no-param-reassign
+      //   if (phone[0] !== "+") phone = `+${phone}`;
+      //   await sendSmsToClients(phone).catch((err) => {
+      //     throw new Error(err);
+      //   });
+      // });
 
       // res for user
       res.json({ message: "Photos are uploading." });

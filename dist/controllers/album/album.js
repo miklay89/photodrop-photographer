@@ -13,7 +13,6 @@ const convert_to_png_1 = __importDefault(require("../../libs/convert_to_png"));
 const watermark_1 = __importDefault(require("../../libs/watermark"));
 const thumbnails_1 = __importDefault(require("../../libs/thumbnails"));
 const s3_1 = __importDefault(require("../../libs/s3"));
-const sms_notification_1 = __importDefault(require("../../libs/sms_notification"));
 const db = db_1.default.Connector;
 const { albumsTable, photosTable } = db_1.default.Tables;
 const pathToWatermark = path_1.default.join(__dirname, "..", "..", "..", "/templates", "wm_template.svg");
@@ -106,11 +105,6 @@ class Album {
                         clients,
                     };
                     await db.insert(photosTable).values(newPhoto);
-                });
-                clients.split(",").forEach(async (phone) => {
-                    if (phone[0] !== "+")
-                        phone = `+${phone}`;
-                    await (0, sms_notification_1.default)(phone);
                 });
                 res.json({ message: "Photos are uploading." });
             }
