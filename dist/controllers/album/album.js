@@ -50,7 +50,12 @@ class Album {
                     if (!query.length)
                         throw boom_1.default.notFound();
                     const album = query.map((q) => q.pd_albums)[0];
-                    album.photos = query.map((q) => q.pd_photos);
+                    if (!query[0].pd_photos?.photoId) {
+                        album.photos = [];
+                    }
+                    else {
+                        album.photos = query.map((q) => q.pd_photos);
+                    }
                     res.json({ data: album });
                 });
             }

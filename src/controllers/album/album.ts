@@ -62,7 +62,12 @@ class Album {
         .then((query) => {
           if (!query.length) throw Boom.notFound();
           const album: any = query.map((q) => q.pd_albums)[0];
-          album.photos = query.map((q) => q.pd_photos);
+          // eslint-disable-next-line consistent-return, array-callback-return
+          if (!query[0].pd_photos?.photoId) {
+            album.photos = [];
+          } else {
+            album.photos = query.map((q) => q.pd_photos);
+          }
           res.json({ data: album });
         });
     } catch (err) {
