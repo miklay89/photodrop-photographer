@@ -20,7 +20,7 @@ app.use(
       "http://213.111.67.182:5173",
       "http://localhost:5173",
       "http://localhost:3000",
-      `https://photodrop-photographer.onrender.com:${process.env.PORT}`,
+      "https://pd-photographer.onrender.com",
     ],
     credentials: true,
   }),
