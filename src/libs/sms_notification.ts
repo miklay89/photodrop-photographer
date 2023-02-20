@@ -1,10 +1,8 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { Twilio } from "twilio";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-// TWILIO
 const accountSid = process.env.TWILIO_ACCOUNT_SID as string;
 const authToken = process.env.TWILIO_AUTH_TOKEN as string;
 const client = new Twilio(accountSid, authToken);

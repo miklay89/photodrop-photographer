@@ -1,28 +1,20 @@
-/* eslint-disable class-methods-use-this */
 import { RequestHandler } from "express";
 import Boom from "@hapi/boom";
-import dbObject from "../../data/db";
+import UserRepository from "../../repositories/user";
+import { PDPUserLogin, TypedResponse } from "../../types/types";
 
-const db = dbObject.Connector;
-const { usersTable } = dbObject.Tables;
-
-class User {
-  public getAllUsers: RequestHandler = async (req, res, next) => {
+export default class UserController {
+  static getAllUsers: RequestHandler = async (
+    req,
+    res: TypedResponse<PDPUserLogin[]>,
+    next,
+  ) => {
     try {
-      // select all existing users
-      await db
-        .select(usersTable)
-        .fields({
-          login: usersTable.login,
-        })
-        .then((query) => {
-          if (!query.length) throw Boom.notFound();
-          res.status(200).json(query);
-        });
+      const users = await UserRepository.getAllUsers();
+      if (!users) throw Boom.notFound();
+      res.status(200).json(users);
     } catch (err) {
       next(err);
     }
   };
 }
-
-export default new User();

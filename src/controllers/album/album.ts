@@ -1,20 +1,25 @@
-/* eslint-disable class-methods-use-this */
 import { RequestHandler } from "express";
 import Boom from "@hapi/boom";
-import { eq } from "drizzle-orm/expressions";
 import { v4 as uuid } from "uuid";
 import path from "path";
-import dbObject from "../../data/db";
 import getUserIdFromToken from "../../libs/get_user_id_from_token";
 import convertToPng from "../../libs/convert_to_png";
 import watermark from "../../libs/watermark";
 import thumbnail from "../../libs/thumbnails";
 import uploadFileToS3 from "../../libs/s3";
+import {
+  AlbumWithPhotos,
+  CreateAlbumRequest,
+  File,
+  TypedResponse,
+  UploadPhotosRequest,
+} from "../../types/types";
+import Album from "../../entities/album";
+import AlbumRepository from "../../repositories/album";
+import Photo from "../../entities/photo";
+import PhotoRepository from "../../repositories/photo";
+import { PDPAlbum } from "../../data/schema";
 // import sendSmsToClients from "../../libs/sms_notification";
-import { IFile } from "./types";
-
-const db = dbObject.Connector;
-const { albumsTable, photosTable } = dbObject.Tables;
 
 const pathToWatermark = path.join(
   __dirname,
@@ -25,88 +30,85 @@ const pathToWatermark = path.join(
   "wm_template.svg",
 );
 
-class Album {
-  public createAlbum: RequestHandler = async (req, res, next) => {
+export default class AlbumController {
+  static createAlbum: RequestHandler = async (
+    req: CreateAlbumRequest,
+    res: TypedResponse<{ message: string; album: PDPAlbum }>,
+    next,
+  ) => {
+    const userId = getUserIdFromToken(
+      req.header("Authorization")?.replace("Bearer ", "")!,
+    );
+    const { name, location, datapicker } = req.body;
+
     try {
-      const userId = getUserIdFromToken(
-        req.header("Authorization")?.replace("Bearer ", "")!,
+      const createdAt = new Date(
+        Date.parse(datapicker),
+      ).toJSON() as unknown as Date;
+
+      const newAlbum = new Album(uuid(), name, location, createdAt, userId);
+
+      await AlbumRepository.saveAlbum(newAlbum);
+
+      res.json({ message: "Album created", album: newAlbum });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  static getAlbumById: RequestHandler = async (
+    req,
+    res: TypedResponse<{ data: AlbumWithPhotos }>,
+    next,
+  ) => {
+    const { albumId } = req.params;
+
+    try {
+      const albumWithPhotos = await AlbumRepository.getAlbumWithPhotosById(
+        albumId,
       );
-      const { name, location, datapicker } = req.body;
+      if (!albumWithPhotos) throw Boom.notFound();
 
-      const createdAt = new Date(Date.parse(datapicker)).toJSON();
-
-      const newAlbum = {
-        albumId: uuid(),
-        name,
-        location,
-        createdAt: createdAt as unknown as Date,
-        userId,
-      };
-
-      await db.insert(albumsTable).values(newAlbum);
-
-      return res.json({ message: "Album created", album: newAlbum });
+      res.json({ data: albumWithPhotos });
     } catch (err) {
       next(err);
     }
-    return null;
   };
 
-  public getAlbumById: RequestHandler = async (req, res, next) => {
+  static getAllAlbums: RequestHandler = async (
+    req,
+    res: TypedResponse<{ data: PDPAlbum[] }>,
+    next,
+  ) => {
+    const userId = getUserIdFromToken(
+      req.header("Authorization")?.replace("Bearer ", "")!,
+    );
+
     try {
-      const { albumId } = req.params;
-      await db
-        .select(albumsTable)
-        .leftJoin(photosTable, eq(photosTable.albumId, albumsTable.albumId))
-        .where(eq(albumsTable.albumId, albumId))
-        .then((query) => {
-          if (!query.length) throw Boom.notFound();
-          const album: any = query.map((q) => q.pd_albums)[0];
-          // eslint-disable-next-line consistent-return, array-callback-return
-          if (!query[0].pd_photos?.photoId) {
-            album.photos = [];
-          } else {
-            album.photos = query.map((q) => q.pd_photos);
-          }
-          res.json({ data: album });
-        });
+      const albums = await AlbumRepository.getAllAlbumsByUserId(userId);
+
+      if (!albums) throw Boom.notFound();
+
+      res.json({ data: albums });
     } catch (err) {
       next(err);
     }
-    return null;
   };
 
-  public getAllAlbums: RequestHandler = async (req, res, next) => {
+  static uploadPhotosToAlbum: RequestHandler = async (
+    req: UploadPhotosRequest,
+    res: TypedResponse<{ message: string }>,
+    next,
+  ) => {
+    const albumId = req.body.album;
+    const { clients } = req.body;
+    const files = req.files as File[];
+
     try {
-      const userId = getUserIdFromToken(
-        req.header("Authorization")?.replace("Bearer ", "")!,
-      );
-
-      await db
-        .select(albumsTable)
-        .where(eq(albumsTable.userId, userId))
-        .then((query) => {
-          if (!query.length) throw Boom.notFound();
-          res.json({ data: query });
-        });
-    } catch (err) {
-      next(err);
-    }
-    return null;
-  };
-
-  public uploadPhotosToAlbum: RequestHandler = async (req, res, next) => {
-    try {
-      // data from client-side
-      const albumId = req.body.album;
-      const { clients } = req.body;
-      const files = req.files as IFile[];
-
-      // converting + creating watermark + thumbnails + uploading + storing to DB
       files.forEach(async (f) => {
         let file = f.buffer;
         let extName = f.originalname.split(".").pop()?.toLowerCase();
-        // convert from heic if need
+
         if (f.originalname.split(".").pop()?.toLowerCase() === "heic") {
           file = await convertToPng(file);
           extName = "png";
@@ -116,18 +118,17 @@ class Album {
         const thmbOriginal = await thumbnail(file);
         const thmbMarked = await thumbnail(markedFile);
 
-        const newPhoto = {
-          photoId: uuid(),
+        const newPhoto = new Photo(
+          uuid(),
           albumId,
-          lockedThumbnailUrl: await uploadFileToS3(thmbMarked, "jpeg"),
-          lockedPhotoUrl: await uploadFileToS3(markedFile, extName!),
-          unlockedThumbnailUrl: await uploadFileToS3(thmbOriginal, "jpeg"),
-          unlockedPhotoUrl: await uploadFileToS3(file, extName!),
+          await uploadFileToS3(thmbMarked, "jpeg"),
+          await uploadFileToS3(markedFile, extName!),
+          await uploadFileToS3(thmbOriginal, "jpeg"),
+          await uploadFileToS3(file, extName!),
           clients,
-        };
+        );
 
-        // storing photos in db - photos_table
-        await db.insert(photosTable).values(newPhoto);
+        await PhotoRepository.savePhoto(newPhoto);
       });
 
       // clients.split(",").forEach(async (phone: string) => {
@@ -138,13 +139,9 @@ class Album {
       //   });
       // });
 
-      // res for user
       res.json({ message: "Photos are uploading." });
     } catch (err) {
       next(err);
     }
-    return null;
   };
 }
-
-export default new Album();

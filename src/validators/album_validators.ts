@@ -1,10 +1,9 @@
-/* eslint-disable class-methods-use-this */
 import Joi from "joi";
 import Boom from "@hapi/boom";
 import { RequestHandler } from "express";
 
-class AlbumValidator {
-  public createAlbumBody: RequestHandler = (req, res, next) => {
+export default class AlbumValidator {
+  static createAlbumBody: RequestHandler = (req, res, next) => {
     const schema = Joi.object({
       name: Joi.string().required(),
       location: Joi.string().required(),
@@ -20,7 +19,7 @@ class AlbumValidator {
     }
   };
 
-  public uploadPhotosToAlbumBody: RequestHandler = (req, res, next) => {
+  static uploadPhotosToAlbumBody: RequestHandler = (req, res, next) => {
     const bodySchema = Joi.object({
       clients: Joi.string().required(),
       album: Joi.string().required(),
@@ -43,5 +42,3 @@ class AlbumValidator {
     }
   };
 }
-
-export default new AlbumValidator();

@@ -6,6 +6,7 @@
     "middlewares",
     "mozjpeg",
     "Subsampling",
+    "thmb",
     "Uppy"
   ]
 }

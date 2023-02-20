@@ -6,21 +6,14 @@ import AlbumController from "../controllers/album/album";
 
 const router = Router();
 
-// create album
 router.post(
   "/create-album",
   isAuthorized,
   AlbumValidator.createAlbumBody,
   AlbumController.createAlbum,
 );
-
-// get album by album_id
 router.get("/get-album/:albumId", isAuthorized, AlbumController.getAlbumById);
-
-// get all albums by user_id
 router.get("/all", isAuthorized, AlbumController.getAllAlbums);
-
-// upload one or multiple photos to album
 router.post(
   "/upload-photos",
   isAuthorized,

@@ -2,15 +2,11 @@ import { RequestHandler } from "express";
 import Boom from "@hapi/boom";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { eq } from "drizzle-orm/expressions";
-import dbObject from "../data/db";
+import UserRepository from "../repositories/user";
 
 dotenv.config();
 
-const db = dbObject.Connector;
-const { usersTable } = dbObject.Tables;
-
-const tokenSecret = process.env.TOKEN_SECRET as string;
+const tokenSecret = process.env.TOKEN_SECRET;
 
 const isAuthorized: RequestHandler = async (req, res, next): Promise<void> => {
   try {
@@ -20,18 +16,15 @@ const isAuthorized: RequestHandler = async (req, res, next): Promise<void> => {
       throw Boom.unauthorized("Invalid token.");
     }
 
-    let decode;
+    let userId: string;
 
     jwt.verify(token, tokenSecret, (err, encoded) => {
       if (err) throw Boom.unauthorized("Token expired");
-      decode = encoded;
+      userId = (encoded as { userId: string; iat: number; exp: number }).userId;
     });
 
-    const user = await db
-      .select(usersTable)
-      .where(eq(usersTable.userId, (decode as any).userId));
-
-    if (!user.length) throw Boom.unauthorized("Invalid token.");
+    const user = UserRepository.getUserById(userId!);
+    if (!user) throw Boom.unauthorized("Invalid token.");
 
     next();
   } catch (err) {

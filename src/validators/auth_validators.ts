@@ -1,11 +1,9 @@
-/* eslint-disable class-methods-use-this */
 import Joi from "joi";
 import Boom from "@hapi/boom";
 import { RequestHandler } from "express";
 
-class AuthValidator {
-  // login body validation
-  public checkLoginBody: RequestHandler = (req, res, next) => {
+export default class AuthValidator {
+  static checkLoginBody: RequestHandler = (req, res, next) => {
     const schema = Joi.object({
       login: Joi.string()
         .pattern(/^[a-zA-Z_`]/)
@@ -22,8 +20,7 @@ class AuthValidator {
     }
   };
 
-  // sign-up body validation
-  public checkSignUpBody: RequestHandler = (req, res, next) => {
+  static checkSignUpBody: RequestHandler = (req, res, next) => {
     const schema = Joi.object({
       login: Joi.string()
         .pattern(/^[a-zA-Z_]+$/, { name: "letters and underscore" })
@@ -41,8 +38,7 @@ class AuthValidator {
     }
   };
 
-  // auth/refresh
-  public checkCookies: RequestHandler = (req, res, next) => {
+  static checkCookies: RequestHandler = (req, res, next) => {
     try {
       const schema = Joi.object({
         refreshToken: Joi.string().required(),
@@ -56,5 +52,3 @@ class AuthValidator {
     }
   };
 }
-
-export default new AuthValidator();

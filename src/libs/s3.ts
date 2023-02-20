@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import S3 from "aws-sdk/clients/s3";
 import { v4 as uuid } from "uuid";
 import dotenv from "dotenv";

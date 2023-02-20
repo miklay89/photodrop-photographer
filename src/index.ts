@@ -1,6 +1,5 @@
 import dotenv from "dotenv";
 import express from "express";
-// eslint-disable-next-line import/no-extraneous-dependencies
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import authRoutes from "./routes/auth";
@@ -47,7 +46,6 @@ app.use("/auth", authRoutes);
 app.use("/album", albumRoutes);
 app.use("/user", userRoutes);
 
-// handle errors
 app.use(errorHandler);
 
 app.listen(process.env.PORT || 5000, () => {

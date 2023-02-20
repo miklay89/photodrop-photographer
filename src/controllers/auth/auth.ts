@@ -1,96 +1,82 @@
-/* eslint-disable class-methods-use-this */
 import { RequestHandler } from "express";
 import Boom from "@hapi/boom";
 import bcryptjs from "bcryptjs";
-import { eq } from "drizzle-orm/expressions";
 import { v4 as uuid } from "uuid";
-import dbObject from "../../data/db";
 import createTokens from "../../libs/jwt_generator";
+import UserRepository from "../../repositories/user";
+import SessionRepository from "../../repositories/session";
+import {
+  LogInRequest,
+  RefreshTokensRequest,
+  SignUpRequest,
+  TypedResponse,
+} from "../../types/types";
+import User from "../../entities/user";
+import Session from "../../entities/session";
 
-const db = dbObject.Connector;
-const { usersTable, sessionsTable } = dbObject.Tables;
-
-class AuthController {
-  public signUp: RequestHandler = async (req, res, next) => {
-    const login = (req.body.login as string).toLowerCase();
+export default class AuthController {
+  static signUp: RequestHandler = async (
+    req: SignUpRequest,
+    res: TypedResponse<{ message: string; login: string; password: string }>,
+    next,
+  ) => {
+    const login = req.body.login.toLowerCase();
     const { password, email, fullName } = req.body;
 
     try {
-      // check if user exist
-      await db
-        .select(usersTable)
-        .where(eq(usersTable.login, login))
-        .then((query) => {
-          if (query.length)
-            throw Boom.conflict(`User with login - ${login} is exist.`);
-        });
+      const userExist = await UserRepository.getUsersByLogin(login);
+      if (userExist)
+        throw Boom.conflict(`User with login - ${login} is exist.`);
 
-      // hash password
       const hashedPassword = await bcryptjs.hash(password, 10);
 
-      // new user object
-      const newUser = {
-        login,
-        password: hashedPassword,
-        userId: uuid(),
-        email: email || null,
-        fullName: fullName || null,
-      };
+      const newUser = new User(login, hashedPassword, uuid(), email, fullName);
 
-      // store new user in DB
-      await db.insert(usersTable).values(newUser);
+      await UserRepository.saveUser(newUser);
 
-      // res - with OK status
-      return res
-        .status(200)
-        .json({ message: "User is registered.", login, password });
+      res.status(200).json({ message: "User is registered.", login, password });
     } catch (err) {
       next(err);
     }
-    return null;
   };
 
-  public logIn: RequestHandler = async (req, res, next) => {
+  static logIn: RequestHandler = async (
+    req: LogInRequest,
+    res: TypedResponse<{ accessToken: string }>,
+    next,
+  ) => {
     const login = req.body.login.toLowerCase();
-    const password = req.body.password as string;
-    let userId: string = "";
-    let hashedPassword: string = "";
+    const { password } = req.body;
 
     try {
-      // try to find user in db for check is it exist
-      await db
-        .select(usersTable)
-        .where(eq(usersTable.login, login))
-        .then((query) => {
-          if (!query.length)
-            throw Boom.notFound(`User with login - ${login} isn't exist.`);
-          hashedPassword = query[0].password;
-          userId = query[0].userId;
-        });
+      const user = await UserRepository.getUsersByLogin(login);
+      if (!user) throw Boom.notFound(`User with login - ${login} isn't exist.`);
 
-      // compare passwords
+      const { userId } = user[0];
+      const hashedPassword = user[0].password;
+
       await bcryptjs.compare(password, hashedPassword).then((same) => {
         if (!same) throw Boom.badRequest("Password is incorrect.");
       });
 
-      // create tokens for next auth
       const tokens = createTokens(userId);
 
       // session expire in - 5 days
       const refreshTokenExpTime = Math.floor(Date.now() + 432000000);
-      const sessionExpireTimestamp = new Date(refreshTokenExpTime).toJSON();
+      const sessionExpireTimestamp = new Date(
+        refreshTokenExpTime,
+      ).toJSON() as unknown as Date;
 
-      const newSession = {
-        sessionId: uuid(),
+      const newSession = new Session(
+        uuid(),
         userId,
-        refreshToken: tokens.refreshToken,
-        expiresIn: sessionExpireTimestamp as unknown as Date,
-      };
+        tokens.refreshToken,
+        sessionExpireTimestamp,
+      );
 
-      // saving session
-      await db.insert(sessionsTable).values(newSession);
+      await SessionRepository.saveSession(newSession);
 
-      return res
+      res
         .cookie("refreshToken", tokens.refreshToken, {
           httpOnly: true,
           sameSite: "strict",
@@ -99,58 +85,51 @@ class AuthController {
     } catch (err) {
       next(err);
     }
-    return null;
   };
 
-  public refreshTokens: RequestHandler = async (req, res, next) => {
+  static refreshTokens: RequestHandler = async (
+    req: RefreshTokensRequest,
+    res: TypedResponse<{ accessToken: string }>,
+    next,
+  ) => {
     const { refreshToken } = req.cookies;
 
     try {
+      const session = await SessionRepository.getSessionByRefreshToken(
+        refreshToken,
+      );
+
+      if (!session) throw Boom.badRequest("Invalid refresh token.");
+
       const timeStamp = new Date(Date.now()).toJSON();
-
-      // check existing session
-      const sessionIsExist = await db
-        .select(sessionsTable)
-        .where(eq(sessionsTable.refreshToken, refreshToken));
-
-      if (!sessionIsExist.length)
-        throw Boom.badRequest("Invalid refresh token.");
-
-      // check session expiration
       if (
         Date.parse(timeStamp) >=
-        Date.parse(sessionIsExist[0].expiresIn as unknown as string)
+        Date.parse(session[0].expiresIn as unknown as string)
       ) {
-        // delete old session
-        await db
-          .delete(sessionsTable)
-          .where(eq(sessionsTable.sessionId, sessionIsExist[0].sessionId));
-
+        await SessionRepository.deleteSessionById(session[0].sessionId);
         throw Boom.unauthorized("Session is expired, please log-in.");
       }
 
-      // creating new tokens - access and refresh
-      const newTokens = createTokens(sessionIsExist[0].userId);
+      const newTokens = createTokens(session[0].userId);
 
-      // creating new session
-      // session expire in - 5 days
       const refreshTokenExpTime = Math.floor(Date.now() + 432000000);
-      const sessionExpireTimestamp = new Date(refreshTokenExpTime).toJSON();
+      const sessionExpireTimestamp = new Date(
+        refreshTokenExpTime,
+      ).toJSON() as unknown as Date;
 
-      // update session in DB
-      const newSession = {
-        sessionId: sessionIsExist[0].sessionId,
-        userId: sessionIsExist[0].userId,
-        refreshToken: newTokens.refreshToken,
-        expiresIn: sessionExpireTimestamp as unknown as Date,
-      };
+      const newSession = new Session(
+        session[0].sessionId,
+        session[0].userId,
+        newTokens.refreshToken,
+        sessionExpireTimestamp,
+      );
 
-      await db
-        .update(sessionsTable)
-        .set(newSession)
-        .where(eq(sessionsTable.sessionId, newSession.sessionId));
+      await SessionRepository.updateSessionById(
+        newSession,
+        session[0].sessionId,
+      );
 
-      return res
+      res
         .cookie("refreshToken", newTokens.refreshToken, {
           httpOnly: true,
           sameSite: "strict",
@@ -159,12 +138,12 @@ class AuthController {
     } catch (err) {
       next(err);
     }
-    return null;
   };
 
-  public me: RequestHandler = async (req, res) => {
-    return res.json({ message: "ok" });
+  static me: RequestHandler = async (
+    req,
+    res: TypedResponse<{ message: string }>,
+  ) => {
+    res.json({ message: "ok" });
   };
 }
-
-export default new AuthController();
