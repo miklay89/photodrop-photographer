@@ -3,19 +3,23 @@
 #
 ### [POST] /auth/sign-up - using for register new users
 ### body: JSON
+```json
 {
 	"login": "test", // allowed: letters and underscore
 	"password": "test", // allowed: letters and numbers
 	"email": "test.test@test.com", // optional field
 	"fullName": "Test Test" // optional field
 }
+```
 #
 ### [POST] /auth/login
 #### body: JSON
+```json
 {
 	"login": "test", // allowed: letters and underscore
 	"password": "test", // allowed: letters and numbers
 }
+```
 #### After login you will gain access token in response.body and refresh token in cookies. You should store access token in client side app in headers["authorization"].
 #
 ### [POST] /auth/refresh
@@ -33,11 +37,13 @@
 #
 ### [POST] /album/create-album
 #### body: JSON
+```json
 {
 	"name": "New life2", // required field
 	"location": "Glasgow", // required field
 	"datapicker": "04 Dec 1995 00:12:00 GMT" // required field
 }
+```
 #### headers: ["authorization"]: access_token
 #### You will create new album with data from body
 #
@@ -53,12 +59,14 @@
 #
 ### [POST] /album/upload-photos
 #### body: multipart-form
+```json
 {
   "clients": "32492347234,380509545671", // optional string of clients
   "album": "album_id", // required
   "files": file.jpg, // required at least 1 file
   "files": file2.png, // required at least 1 file
 }
+```
 #### headers: ["authorization"]: access_token
 #### Allow you to upload files to S3 from client side of application
 #
